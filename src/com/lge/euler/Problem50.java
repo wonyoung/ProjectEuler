@@ -1,12 +1,7 @@
 package com.lge.euler;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.*;
 
 import org.junit.Test;
 
@@ -14,9 +9,9 @@ public class Problem50 {
 	
 	private List<Integer> primes;
 
-	public Problem50()
+	public Problem50(int max)
 	{
-		primes = createPrimes(1000000);
+		primes = createPrimes(max);
 	}
 	
 	public List<Integer> createPrimes(int max)
@@ -65,10 +60,9 @@ public class Problem50 {
 		}
 		return 0;
 	}
-
-	@Test
-	public void testGeneral()
-	{		
-		System.out.println(getLongestPrime());
+	
+	public static void main(String[] args) {
+		System.out.println(new Problem50(1000).getLongestPrime());
+		
 	}
 }
