@@ -3,8 +3,6 @@ package com.lge.euler;
 import java.math.BigInteger;
 import java.util.*;
 
-import org.junit.Test;
-
 public class Problem50 {
 	
 	private List<Integer> primes;
