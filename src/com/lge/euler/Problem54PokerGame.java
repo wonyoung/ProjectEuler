@@ -186,19 +186,6 @@ public class Problem54PokerGame {
 	}
 	
 	/*
-	 * Num : 카드 숫자
-	 * Shape : 카드 무늬
-	 *
-	 * Player : 여러장의 카드를 가지고 있는 객체. 
-	 * 
-	 * 카드는 Num과 Shape의 Entry(pair)로만 의미를 가지므로 따로 Class를 만들지 않는다.
-	 * 
-	 * Rank : 카드들의 결과값
-	 * Rank가 있고, tie되었을때는 High card의 목록이 필요하다.
-	 * 
-	 * 비교는..
-	 * Rank 비교
-	 * Rank card 비교
 	 */
 	
 	enum Rank {
@@ -206,7 +193,6 @@ public class Problem54PokerGame {
 		FLUSH, FULL_HOUSE, FOUR_OF_A_KIND, STRAIGHT_FLUSH, ROYAL_FLUSH;		
 	};
 	
-	// 다섯장을 모두 사용하는 경우에는 RANK CARD로 비교하지 않아도 된다.
 	public static Rank rank(TreeMultimap<Num, Shape> cardset, TreeMultiset<Num> rankset) {
 		rankset = TreeMultiset.create();
 		if (isRoyalFlush(cardset)) {
@@ -396,8 +382,7 @@ public class Problem54PokerGame {
 		}
 
 		public void generateRank() {
-			rank = Rank.HIGH_CARD;
-			
+			rank = rank(cards, rankCards);
 		}
 		
 		public Rank getRank() {
