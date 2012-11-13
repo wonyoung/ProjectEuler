@@ -12,6 +12,10 @@ import com.lge.euler.Problem54PokerGame.Num;
 public class Problem54PokerGame {
 
 	@Test
+	public void readFromFile() {
+		
+	}
+	@Test
 	public void rankShouldBeStraightOrNot() {
 		Player player1 = new Player();
 		Player player2 = new Player();
@@ -35,6 +39,9 @@ public class Problem54PokerGame {
 
 		assertEquals(Rank.FLUSH, rank(player1.cards));
 		assertEquals(Rank.HIGH_CARD, rank(player2.cards));
+		assertEquals(Rank.FLUSH, player1.getRank());
+		assertEquals(Rank.HIGH_CARD, player2.getRank());
+		assertEquals(true, player1.getRank().ordinal() > player2.getRank().ordinal());
 	}	
 
 	@Test
@@ -125,8 +132,8 @@ public class Problem54PokerGame {
 		for(int i=0;i<5;i++)
 			player2.addCard(st.nextToken());
 		
-		player1.getRank();		
-		player2.getRank();
+		player1.generateRank();		
+		player2.generateRank();
 	}
 
 	enum Num {
