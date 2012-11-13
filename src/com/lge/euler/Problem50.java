@@ -60,7 +60,7 @@ public class Problem50 {
 	}
 	
 	public static void main(String[] args) {
-		System.out.println(new Problem50(1000).getLongestPrime());
+		System.out.println(new Problem50(10000).getLongestPrime());
 		
 	}
 }

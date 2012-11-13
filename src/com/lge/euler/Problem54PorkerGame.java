@@ -25,6 +25,15 @@ public class Problem54PorkerGame {
 		assertEquals(true, isFlush(player1.cards));
 		assertEquals(false, isFlush(player2.cards));
 		
+		startGame(player1, player2, "4C 4H 5S 4S 4D 1C 8H 9C 2C 8H");
+		assertEquals(true, isFourCard(player1.cards));
+		assertEquals(false, isFourCard(player2.cards));
+		
+		startGame(player1, player2, "4C 4H 5S 3S 3D 1C 8H 9C 2C 8H");
+		assertEquals(2, pairs(player1.cards));
+		assertEquals(1, pairs(player2.cards));
+		
+
 	}
 	
 	private void startGame(Player player1, Player player2, String allCards) {
@@ -133,15 +142,15 @@ public class Problem54PorkerGame {
 		Multiset<Num> numbers = cardset.keys();
 
 		int preOrdinal = -1;
+		int count = 0;
 		for(Num n : numbers) {
-			System.out.println(" "+ n.ordinal() + numbers.count(n));
-			
 			if (preOrdinal > 0 && (n.ordinal() - preOrdinal) != 1)
 				return false;
-			if (numbers.count(n) > 1)
-				return false;
 			preOrdinal = n.ordinal();
+			count++;
 		}
+		if(count < 4)
+			return false;
 		
 		return true;
 	}
@@ -155,7 +164,24 @@ public class Problem54PorkerGame {
 		}
 		return false;	
 	}
+	public static boolean isFourCard(TreeMultimap<Num, Shape> cardset) {
+		Multiset<Num> numbers = cardset.keys();
+		for(Num n : numbers) {
+			if (numbers.count(n) == 4)
+				return true;
+		}
+		return false;	
+	}	
 	
+	public static int pairs(TreeMultimap<Num, Shape> cardset) {
+		int pair = 0;
+		Multiset<Num> numbers = cardset.keys();
+		for(Num n : numbers) {
+			if (numbers.count(n) == 2)
+				pair++;
+		}
+		return pair;
+	}
 	class Player {
 		TreeMultimap<Num, Shape> cards = TreeMultimap.create();
 		
