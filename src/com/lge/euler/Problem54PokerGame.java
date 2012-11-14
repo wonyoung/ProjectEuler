@@ -2,6 +2,7 @@ package com.lge.euler;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.*;
 import java.util.*;
 
 import org.junit.Test;
@@ -17,8 +18,8 @@ public class Problem54PokerGame {
 	}
 	@Test
 	public void rankShouldBeStraightOrNot() {
-		Player player1 = new Player();
-		Player player2 = new Player();
+		PokerCards player1 = new PokerCards();
+		PokerCards player2 = new PokerCards();
 
 		startGame(player1, player2, "6C 4S 3C 2H 5S 7D 2S 5D 3S AC");
 		assertEquals(true, isStraight(player1.cards));
@@ -30,8 +31,8 @@ public class Problem54PokerGame {
 
 	@Test
 	public void rankShouldBeFlushOrNot() {
-		Player player1 = new Player();
-		Player player2 = new Player();
+		PokerCards player1 = new PokerCards();
+		PokerCards player2 = new PokerCards();
 
 		startGame(player1, player2, "8C TC KC 9C 4C 7D 2S 5D 3S AC");
 		assertEquals(true, isFlush(player1.cards));
@@ -41,13 +42,14 @@ public class Problem54PokerGame {
 		assertEquals(Rank.HIGH_CARD, rank(player2.cards));
 		assertEquals(Rank.FLUSH, player1.getRank());
 		assertEquals(Rank.HIGH_CARD, player2.getRank());
-		assertEquals(true, player1.getRank().ordinal() > player2.getRank().ordinal());
+		assertEquals(true, player1.getRank().compareTo(player2.getRank()) > 0);
+		
 	}	
 
 	@Test
 	public void rankShouldBeFourOfACardOrNot() {
-		Player player1 = new Player();
-		Player player2 = new Player();
+		PokerCards player1 = new PokerCards();
+		PokerCards player2 = new PokerCards();
 
 		startGame(player1, player2, "4C 4H 5S 4S 4D AC 8C 9C 2C 8H");
 		assertEquals(true, isFourCard(player1.cards));
@@ -59,8 +61,8 @@ public class Problem54PokerGame {
 	
 	@Test
 	public void rankShouldBeTwoPairsOrOnePair() {
-		Player player1 = new Player();
-		Player player2 = new Player();
+		PokerCards player1 = new PokerCards();
+		PokerCards player2 = new PokerCards();
 		
 		startGame(player1, player2, "4C 4H 5S 3S 3D AC 8C 9C 2C 8H");
 		assertEquals(2, pairs(player1.cards));
@@ -72,8 +74,8 @@ public class Problem54PokerGame {
 	
 	@Test
 	public void rankShouldBeRoyalFlushOrNot() {
-		Player player1 = new Player();
-		Player player2 = new Player();
+		PokerCards player1 = new PokerCards();
+		PokerCards player2 = new PokerCards();
 		
 		startGame(player1, player2, "AC TC QC JC KC AD QD JD TD 4D");
 		assertEquals(true, isRoyalFlush(player1.cards));
@@ -85,8 +87,8 @@ public class Problem54PokerGame {
 	
 	@Test
 	public void rankShouldBeStraightFlushOrNot() {
-		Player player1 = new Player();
-		Player player2 = new Player();
+		PokerCards player1 = new PokerCards();
+		PokerCards player2 = new PokerCards();
 		
 		startGame(player1, player2, "4D 5D 6D 7D 8D 4C 5C 6C 7C 8D");
 		assertEquals(true, isStraightFlush(player1.cards));
@@ -98,8 +100,8 @@ public class Problem54PokerGame {
 
 	@Test
 	public void rankShouldBeFullHouseFlushOrNot() {
-		Player player1 = new Player();
-		Player player2 = new Player();
+		PokerCards player1 = new PokerCards();
+		PokerCards player2 = new PokerCards();
 		
 		startGame(player1, player2, "4C 4H 4S 3S 3D AC AH AD 2C 8H");
 		assertEquals(true, isFullHouse(player1.cards));
@@ -111,8 +113,8 @@ public class Problem54PokerGame {
 
 	@Test
 	public void rankShouldBeThreeOfKindOrNot() {
-		Player player1 = new Player();
-		Player player2 = new Player();
+		PokerCards player1 = new PokerCards();
+		PokerCards player2 = new PokerCards();
 		
 		startGame(player1, player2, "4C 4H 4S 3S 2D AC 8C 9C 2C 8H");
 		assertEquals(true, isThreeOfKind(player1.cards));
@@ -122,7 +124,26 @@ public class Problem54PokerGame {
 		assertEquals(Rank.ONE_PAIR, rank(player2.cards));		
 	}	
 	
-	private void startGame(Player player1, Player player2, String allCards) {
+	@Test
+	public void runPokerGames() throws IOException {
+		PokerCards player1 = new PokerCards();
+		PokerCards player2 = new PokerCards();
+		
+		BufferedReader in = new BufferedReader(new FileReader("poker.txt"));
+		String line;
+		int count = 0;
+		int lines = 0;
+		while( (line = in.readLine()) != null) {
+			lines++;
+			System.out.println(line);
+			if (startGame(player1, player2, line))
+				count++;
+//			if (lines == 5)
+//				break;
+		}
+		System.out.println(count + " / " + lines);
+	}
+	private boolean startGame(PokerCards player1, PokerCards player2, String allCards) {
 		StringTokenizer st = new StringTokenizer(allCards);
 		
 		player1.clearCards();
@@ -134,6 +155,8 @@ public class Problem54PokerGame {
 		
 		player1.generateRank();		
 		player2.generateRank();
+		
+		return player1.wins(player2);
 	}
 
 	enum Num {
@@ -200,41 +223,37 @@ public class Problem54PokerGame {
 		FLUSH, FULL_HOUSE, FOUR_OF_A_KIND, STRAIGHT_FLUSH, ROYAL_FLUSH;		
 	};
 	
-	public static Rank rank(TreeMultimap<Num, Shape> cardset, TreeMultiset<Num> rankset) {
+	public static Rank rank(TreeMultimap<Num, Shape> cardset, SortedMultiset<Num> rankset) {
+		Rank rank = Rank.HIGH_CARD;
+		
 		rankset = TreeMultiset.create();
 		if (isRoyalFlush(cardset)) {
-			return Rank.ROYAL_FLUSH;
-		}
-		if (isStraightFlush(cardset)) {
-			return Rank.STRAIGHT_FLUSH;
-		}
-		if (isFourCard(cardset)) {
+			rank = Rank.ROYAL_FLUSH;
+		} else if (isStraightFlush(cardset)) {
+			rank = Rank.STRAIGHT_FLUSH;
+		} else if (isFourCard(cardset)) {
 			rankset.add(getFourCard(cardset));
-			return Rank.FOUR_OF_A_KIND;
-		}
-		if (isFullHouse(cardset)) {
+			rank = Rank.FOUR_OF_A_KIND;
+		} else if (isFullHouse(cardset)) {
 			rankset.addAll(getFullHouse(cardset));
-			return Rank.FULL_HOUSE;
-		}
-		if (isFlush(cardset)) {
-			return Rank.FLUSH;
-		}
-		if (isStraight(cardset)) {
-			return Rank.STRAIGHT;
-		}
-		if (isThreeOfKind(cardset)) {
+			rank = Rank.FULL_HOUSE;
+		} else if (isFlush(cardset)) {
+			rank = Rank.FLUSH;
+		} else if (isStraight(cardset)) {
+			rank = Rank.STRAIGHT;
+		} else if (isThreeOfKind(cardset)) {
 			rankset.addAll(getThreeOfKind(cardset));
-			return Rank.THREE_OF_A_KIND;
-		}
-		if (pairs(cardset) >= 2) {
+			rank = Rank.THREE_OF_A_KIND;
+		} else if (pairs(cardset) >= 2) {
 			rankset.addAll(getPairs(cardset));
-			return Rank.TWO_PAIR;
-		}
-		if (pairs(cardset) == 1) {
+			rank = Rank.TWO_PAIR;
+		} else if (pairs(cardset) == 1) {
 			rankset.addAll(getPairs(cardset));
-			return Rank.ONE_PAIR;
+			rank = Rank.ONE_PAIR;
 		}
-		return Rank.HIGH_CARD;	
+		
+		rankset = rankset.descendingMultiset();
+		return rank;	
 	}
 
 	
@@ -379,9 +398,9 @@ public class Problem54PokerGame {
 		return count;
 	}
 	
-	class Player {
+	class PokerCards implements Comparable {
 		TreeMultimap<Num, Shape> cards = TreeMultimap.create();
-		TreeMultiset<Num> rankCards;
+		SortedMultiset<Num> rankCards = TreeMultiset.create();
 		Rank rank = Rank.HIGH_CARD;
 		
 		public void addCard(String s) {
@@ -396,12 +415,54 @@ public class Problem54PokerGame {
 			return rank;
 		}
 		
-		public TreeMultiset<Num> getRankCards() {
+		public SortedMultiset<Num> getRankCards() {
 			return rankCards;
+		}
+
+		public boolean wins(PokerCards o) {
+			return compareTo(o) > 0;
 		}
 
 		public void clearCards() {
 			cards.clear();
+		}
+
+		@Override
+		public int compareTo(Object o) throws ClassCastException {
+			if (!(o instanceof PokerCards))
+				throw new ClassCastException("A PokerCards object expected.");
+			
+			return compareTo((PokerCards)o);
+		}
+		
+		private int compareTo(PokerCards o) {
+			System.out.println("A:"+getRank().name() +" B:"+o.getRank().name());
+			if (getRank().compareTo(o.getRank()) == 0) {
+				Num[] myCards;
+				Num[] yourCards;
+				
+				myCards = rankCards.toArray(new Num[0]);
+				yourCards = o.rankCards.toArray(new Num[0]);
+				for(int i=myCards.length-1; i>=0; i--) {
+					System.out.println("A:"+myCards[i].name() +" B:"+yourCards[i].name());
+					int compared = myCards[i].compareTo(yourCards[i]);
+					if (compared != 0)
+						return compared;
+				}
+				myCards = cards.keySet().toArray(new Num[0]);
+				yourCards = o.cards.keySet().toArray(new Num[0]);
+				for(int i=myCards.length-1; i>=0; i--) {
+					System.out.println("A:"+myCards[i].name() +" B:"+yourCards[i].name());
+					int compared = myCards[i].compareTo(yourCards[i]);
+					if (compared != 0)
+						return compared;
+				}				
+				
+				System.out.println("SAME RANKS");
+				return 0;
+			}
+			return getRank().compareTo(o.getRank());			
+			
 		}
 	}
 }
