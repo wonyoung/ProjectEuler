@@ -8,9 +8,8 @@ import java.util.*;
 import org.junit.*;
 
 public class Problem60 {
-
-	private static List<Integer> primes = createPrimes(100000000);
-	private static SparseMatrix matrix = generateConcatenatedPrimeMatrix(10000);
+	Prime primes = new Prime(100000000);
+	SparseMatrix matrix = generateConcatenatedPrimeMatrix(10000);
 
 	@Test
 	public void testSparseMatrixShouldBeEmpty() {
@@ -30,7 +29,9 @@ public class Problem60 {
 	
 	@Ignore
 	public void printGeneratedPrimes() {
-		for(Integer i : primes) {
+		primes.setNext(2);
+		while(primes.hasNext()) {
+			int i=primes.next();
 			Set<Integer> l = matrix.get(i);
 			
 			if (l != null)
@@ -41,14 +42,19 @@ public class Problem60 {
 	
 	@Test
 	public void run() {
-		
 		List<Integer> resultPrimes;
 		
-		for(Integer prime : primes) {
+		primes.setNext(2);
+		while(primes.hasNext()) {
+			int prime = primes.next();
 			resultPrimes = getNConcatenatablePrimes(prime, 5);
 			if (resultPrimes != null) {
-				for (Integer i : resultPrimes)
+				int sum = 0;
+				for (int i : resultPrimes) {
 					System.out.println("prime " + i);
+					sum += i;
+				}
+				System.out.println("Sum of primes = "+ sum);
 				break;
 			}
 		}
@@ -173,8 +179,8 @@ public class Problem60 {
 		int concatenated1 = Integer.valueOf(strA + strB);
 		int concatenated2 = Integer.valueOf(strB + strA);
 		
-		if (primes.contains(concatenated1)
-				&& primes.contains(concatenated2))
+		if (Prime.isPrime(concatenated1)
+				&& Prime.isPrime(concatenated2))
 			return true;
 			
 		return false;
@@ -182,20 +188,29 @@ public class Problem60 {
 
 	private static SparseMatrix generateConcatenatedPrimeMatrix(int max) {
 		SparseMatrix m = new SparseMatrix();
+		Prime primeA = new Prime(max);
+		Prime primeB = new Prime(max);
 		
-		for(int i=0;primes.get(i)<max;i++) {
-			for(int j=i;primes.get(j)<max;j++) {
-				if (i==j)
+		while(primeA.hasNext()) {
+			int pA = primeA.next();
+			if (pA > max)
+				break;
+			primeB.setNext(pA);
+			while(primeB.hasNext()) {
+				int pB = primeB.next();
+				if (pB > max)
+					break;
+				
+				if (pA == pB)
 					continue;
 				
-				int primeA = primes.get(i);
-				int primeB = primes.get(j);
-				if (m.contains(primeA, primeB))
+				if (m.contains(pA, pB))
 					continue;
-				if (isConcatenatedPrime(primeA, primeB))
-					m.add(primeA, primeB);
+				if (isConcatenatedPrime(pA, pB))
+					m.add(pA, pB);
 			}
 		}
+
 		System.out.println("Matrix "+max+" generated.");
 		return m;
 	}
