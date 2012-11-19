@@ -1,0 +1,36 @@
+sqrt(23) = [4;(1,3,1,8)]
+
+4*4 = 16
+5*5 = 25
+¢¡ 4, 
+c
+----
+sqrt(a)-b
+
+c(sqrt(a) + b)  ¢¡ sqrt(a) - (nextC-b)
+----------------
+(a - b^2)	¢¡  nextC		
+
+
+(a - b^2) / c ¢¡ nextC
+a ¢¡ nextA
+
+n = b;
+while(n>0  || a - n^2 > 0)
+  nextB = n;
+  nextK++;
+  n = nextB - nextC; 
+nextB = -nextB
+
+
+sqrt(23) -4
+----------
+23 - 4^2
+
+4+sqrt(23)
+
+(a+b)*(a-b) = a^2- b^2
+
+23 - 16
+
+
