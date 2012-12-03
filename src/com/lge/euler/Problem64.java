@@ -39,14 +39,16 @@ sqrt(23) -4
 package com.lge.euler;
 
 import static org.junit.Assert.assertEquals;
+
 import java.util.*;
+
 import org.junit.*;
 
 public class Problem64 {
 
-	@Test
+	@Ignore
 	public void testNormal() {
-		SquareRootPart s = squareRoot(23);
+		SquareRootFraction s = squareRoot(23);
 
 		s.print();
 		for(int i=0;i<7;i++) {
@@ -55,9 +57,71 @@ public class Problem64 {
 		}
 	}
 
+	@Test
+	public void testList() {
+		List<SquareRootFraction> list = continuedFractions(23);
+		
+		assertEquals(false, isOddPeriod(list));
+		
+		for(SquareRootFraction sqp : list)
+			sqp.print();
+	}
 
-	SquareRootPart squareRoot(int root) {
-		SquareRootPart srp = new SquareRootPart();
+	
+	@Test
+	public void run() {
+		assertEquals(4, countOddPeriodContinuedFractions(13));
+		assertEquals(1322, countOddPeriodContinuedFractions(10000));
+	}
+
+	private int countOddPeriodContinuedFractions(int j) {
+		int count = 0;
+		for(int i=1;i<=j;i++) {
+			if(Util.isSquare(i))
+				continue;
+			if (isOddPeriod(continuedFractions(i)))
+				count++;
+		}
+		return count;
+	}
+	
+	private boolean isOddPeriod(List<SquareRootFraction> list) {
+		return ((list.size()-1) % 2) != 0;
+	}
+
+	private List<SquareRootFraction> continuedFractions(int root) {
+		List<SquareRootFraction> list = new ArrayList<SquareRootFraction>();
+		
+		SquareRootFraction s = squareRoot(root);
+		list.add(s);
+		
+		s = s.next();
+		while(!list.contains(s)) {
+			list.add(s);
+			s = s.next();
+		}
+		return list;
+	}
+
+	@Test
+	public void testSquareRoot() {
+		for(int i=1;i<26;i++) {
+			switch(i) {
+			case 1:
+			case 4:
+			case 9:
+			case 16:
+			case 25:
+				assertEquals(true, Util.isSquare(i));
+				break;
+			default:
+				assertEquals(false, Util.isSquare(i));
+			}
+		}
+	}
+	
+	SquareRootFraction squareRoot(int root) {
+		SquareRootFraction srp = new SquareRootFraction();
 
 		int i;
 		for(i=1;i*i<root;i++) {
@@ -71,8 +135,8 @@ public class Problem64 {
 
 		return srp;
 	}
-
-	class SquareRootPart {
+	
+	class SquareRootFraction {
 		int root;
 		int num;
 		int dem;
@@ -88,8 +152,8 @@ public class Problem64 {
 			System.out.println("          //"+root + "  - " + num );
 		}
 
-		SquareRootPart next() {
-			SquareRootPart next = new SquareRootPart();
+		SquareRootFraction next() {
+			SquareRootFraction next = new SquareRootFraction();
 
 			next.root = root;
 			next.dem = (root - num*num) / dem;
@@ -103,5 +167,37 @@ public class Problem64 {
 
 			return next;
 		}
+		
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + dem;
+			result = prime * result + n;
+			result = prime * result + num;
+			result = prime * result + root;
+			return result;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			SquareRootFraction other = (SquareRootFraction) obj;
+			if (dem != other.dem)
+				return false;
+			if (n != other.n)
+				return false;
+			if (num != other.num)
+				return false;
+			if (root != other.root)
+				return false;
+			return true;
+		}
+		
 	}
 }
